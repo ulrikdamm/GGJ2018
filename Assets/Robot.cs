@@ -9,6 +9,10 @@ public class Robot : MonoBehaviour {
 	[SerializeField] Sprite[] attackingSprites;
 	[SerializeField] Sprite[] veryAttackingSprites;
 	
+	[SerializeField] AudioClip chargeSound;
+	[SerializeField] AudioClip attackSound;
+	
+	[SerializeField] AudioSource audioSource;
 	[SerializeField] SpriteRenderer spriteRenderer;
 	
 	Sprite[] currentSprites;
@@ -56,6 +60,8 @@ public class Robot : MonoBehaviour {
 		state = State.active;
 		showAnimation(activeSprites, 0.3f);
 		fireCountdown = 6;
+		audioSource.clip = chargeSound;
+		audioSource.Play();
 	}
 	
 	public void becomeAttacky() {
@@ -68,6 +74,8 @@ public class Robot : MonoBehaviour {
 		if (state == State.veryAttack) { return; }
 		state = State.veryAttack;
 		showAnimation(veryAttackingSprites, 0.2f);
+		audioSource.clip = attackSound;
+		audioSource.Play();
 	}
 	
 	void showAnimation(Sprite[] sprites, float interval) {
@@ -80,5 +88,6 @@ public class Robot : MonoBehaviour {
 	
 	void OnValidate() {
 		if (spriteRenderer == null) { spriteRenderer = GetComponent<SpriteRenderer>(); }
+		if (audioSource == null) { audioSource = GetComponent<AudioSource>(); }
 	}
 }

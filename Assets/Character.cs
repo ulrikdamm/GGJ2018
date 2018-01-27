@@ -5,6 +5,9 @@ using System.Collections;
 public class Character : MonoBehaviour {
 	[SerializeField] int playerIndex;
 	
+	[SerializeField] AudioClip punchSound;
+	[SerializeField] AudioClip gettingPunchedSound;
+	
 	[SerializeField] Sprite normalSprite;
 	[SerializeField] Sprite carryingSprite;
 	[SerializeField] Sprite placingSprite;
@@ -22,6 +25,7 @@ public class Character : MonoBehaviour {
 	[SerializeField] Rigidbody2D body;
 	[SerializeField] new SpriteRenderer renderer;
 	[SerializeField] PunchZone punchZone;
+	[SerializeField] AudioSource audioSource;
 	
 	[SerializeField] PowerupType slowdownPowerup;
 	[SerializeField] PowerupType speedupPowerup;
@@ -121,6 +125,8 @@ public class Character : MonoBehaviour {
 			punchZone.punch();
 			renderer.sprite = punchingSprite;
 			punchTimer = 0.3f;
+			audioSource.clip = punchSound;
+			audioSource.Play();
 		}
 	}
 	
@@ -196,6 +202,7 @@ public class Character : MonoBehaviour {
 		if (body == null) { body = GetComponent<Rigidbody2D>(); }
 		if (renderer == null) { renderer = GetComponent<SpriteRenderer>(); }
 		if (punchZone == null) { punchZone = GetComponentInChildren<PunchZone>(); }
+		if (audioSource == null) { audioSource = GetComponent<AudioSource>(); }
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
@@ -237,6 +244,8 @@ public class Character : MonoBehaviour {
 	}
 	
 	public void pushback(Vector2 direction) {
+		audioSource.clip = gettingPunchedSound;
+		audioSource.Play();
 		pushbackForce = direction * 2;
 	}
 }

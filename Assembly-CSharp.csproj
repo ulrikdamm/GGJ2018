@@ -53,16 +53,21 @@
   <ItemGroup>
      <Compile Include="Assets\BatteryDropArea.cs" />
      <Compile Include="Assets\Character.cs" />
-     <Compile Include="Assets\EnergyType.cs" />
      <Compile Include="Assets\GameUI.cs" />
      <Compile Include="Assets\Hovering.cs" />
      <Compile Include="Assets\LaserFlash.cs" />
      <Compile Include="Assets\Pickup.cs" />
-     <Compile Include="Assets\PointsIndicator.cs" />
      <Compile Include="Assets\Powerup.cs" />
      <Compile Include="Assets\PowerupType.cs" />
      <Compile Include="Assets\PunchZone.cs" />
      <Compile Include="Assets\Robot.cs" />
+     <Compile Include="Assets\Script\ControlBotones.cs" />
+     <Compile Include="Assets\Script\Energia.cs" />
+     <Compile Include="Assets\Script\EnergyType.cs" />
+     <Compile Include="Assets\Script\Gestor.cs" />
+     <Compile Include="Assets\Script\PlayerController01.cs" />
+     <Compile Include="Assets\Script\PlayerController02.cs" />
+     <Compile Include="Assets\Script\PointsIndicator.cs" />
      <Compile Include="Assets\Spawner.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity 2017.3/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -324,12 +324,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Character.cs" />
+    <Compile Include="Assets\GameUI.cs" />
+    <Compile Include="Assets\Pickup.cs" />
+    <Compile Include="Assets\Powerup.cs" />
+    <Compile Include="Assets\PowerupType.cs" />
     <Compile Include="Assets\Script\ControlBotones.cs" />
+    <Compile Include="Assets\Script\Energia.cs" />
     <Compile Include="Assets\Script\EnergyType.cs" />
     <Compile Include="Assets\Script\Gestor.cs" />
     <Compile Include="Assets\Script\PlayerController01.cs" />
     <Compile Include="Assets\Script\PlayerController02.cs" />
     <Compile Include="Assets\Script\PointsIndicator.cs" />
+    <Compile Include="Assets\Spawner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

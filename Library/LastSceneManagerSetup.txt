@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/juego.unity
+- path: C:/Users/jma_p/Documents/UNITY/Juego jam/Assets/Scenes/Juego.unity
   isLoaded: 1
   isActive: 1

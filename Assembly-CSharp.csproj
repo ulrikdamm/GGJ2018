@@ -55,6 +55,7 @@
      <Compile Include="Assets\Character.cs" />
      <Compile Include="Assets\EnergyType.cs" />
      <Compile Include="Assets\GameUI.cs" />
+     <Compile Include="Assets\Hovering.cs" />
      <Compile Include="Assets\Pickup.cs" />
      <Compile Include="Assets\PointsIndicator.cs" />
      <Compile Include="Assets\Powerup.cs" />

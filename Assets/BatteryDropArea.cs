@@ -9,6 +9,7 @@ public class BatteryDropArea : MonoBehaviour {
 		
 		if (chargeCount >= 3) {
 			robot.becomeActive();
+			chargeCount = 0;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 
 public class Character : MonoBehaviour {
 	[SerializeField] int playerIndex;
@@ -22,6 +21,7 @@ public class Character : MonoBehaviour {
 	[SerializeField] KeyCode actionKey;
 	[SerializeField][Range(0, 2)] float speed;
 	
+	[SerializeField] Robot robot;
 	[SerializeField] Rigidbody2D body;
 	[SerializeField] new SpriteRenderer renderer;
 	[SerializeField] PunchZone punchZone;
@@ -29,6 +29,7 @@ public class Character : MonoBehaviour {
 	
 	[SerializeField] PowerupType slowdownPowerup;
 	[SerializeField] PowerupType speedupPowerup;
+	[SerializeField] PowerupType shieldPowerup;
 	
 	List<GameObject> overObjects = new List<GameObject>();
 	
@@ -219,6 +220,7 @@ public class Character : MonoBehaviour {
 		if (powerup != null) {
 			if (powerup.type == slowdownPowerup) { applySlowdownPowerup(); }
 			if (powerup.type == speedupPowerup) { applySpeedupPowerup(); }
+			if (powerup.type == shieldPowerup) { robot.activateShield(); }
 			Destroy(other.gameObject);
 			return;
 		}

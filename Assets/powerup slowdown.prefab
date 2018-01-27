@@ -81,6 +81,7 @@ MonoBehaviour:
   types:
   - {fileID: 11400000, guid: a229446acce954890abab9f35cb1b581, type: 2}
   - {fileID: 11400000, guid: a5acf4edc0cb741448d0f35a3b97a915, type: 2}
+  - {fileID: 11400000, guid: e73d7d93690094a758555e6009be3346, type: 2}
   type: {fileID: 0}
   spriteRenderer: {fileID: 212713269757250756}
 --- !u!212 &212713269757250756

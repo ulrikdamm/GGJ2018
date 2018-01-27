@@ -1,13 +1,21 @@
 ﻿using UnityEngine;
 
 public class Robot : MonoBehaviour {
-	enum State { sleep, active, attack, veryAttack };
+	enum State { sleep, active, attack, veryAttack, damaged, dead };
 	State state;
+	
+	[SerializeField] GameObject shield;
 	
 	[SerializeField] Sprite[] sleepingSprites;
 	[SerializeField] Sprite[] activeSprites;
 	[SerializeField] Sprite[] attackingSprites;
 	[SerializeField] Sprite[] veryAttackingSprites;
+	[SerializeField] Sprite[] deadSprites;
+	[SerializeField] Sprite[] deadOnFireSprites;
+	[SerializeField] Sprite[] damagedSprites;
+	
+	[SerializeField] Sprite[] healthBarSprites;
+	[SerializeField] SpriteRenderer healthBar;
 	
 	[SerializeField] AudioClip chargeSound;
 	[SerializeField] AudioClip attackSound;
@@ -19,8 +27,11 @@ public class Robot : MonoBehaviour {
 	int currentSpriteIndex = 0;
 	float spriteAnimationDuration = 0.3f;
 	float spriteAnimationCountdown = 0;
+	bool loopAnimation = true;
 	
 	float? fireCountdown = null;
+	float? shieldCountdown = null;
+	int health = 3;
 	
 	void Start() {
 		becomeSleepy(force: true);
@@ -33,6 +44,7 @@ public class Robot : MonoBehaviour {
 			if (fireCountdown.Value < 0) {
 				becomeSleepy();
 				fireCountdown = null;
+				destroyOtherRobot();
 			} else if (fireCountdown.Value < 2) {
 				becomeVeryAttacky();
 			} else if (fireCountdown.Value < 3) {
@@ -44,7 +56,25 @@ public class Robot : MonoBehaviour {
 		if (spriteAnimationCountdown < 0) {
 			spriteAnimationCountdown = spriteAnimationDuration;
 			currentSpriteIndex = (currentSpriteIndex + 1) % currentSprites.Length;
+			if (loopAnimation) { currentSpriteIndex %= currentSprites.Length; }
+			else { currentSpriteIndex = Mathf.Min(currentSpriteIndex, currentSprites.Length - 1); }
 			spriteRenderer.sprite = currentSprites[currentSpriteIndex];
+			
+			if (state == State.dead && currentSpriteIndex == deadSprites.Length - 1) {
+				showAnimation(deadOnFireSprites, 0.2f);
+			}
+			
+			if (state == State.damaged && currentSpriteIndex == damagedSprites.Length - 1) {
+				becomeSleepy();
+			}
+		}
+		
+		if (shieldCountdown.HasValue) {
+			shieldCountdown = shieldCountdown.Value - Time.deltaTime;
+			if (shieldCountdown < 0) {
+				shieldCountdown = null;
+				shield.SetActive(false);
+			}
 		}
 	}
 	
@@ -78,16 +108,56 @@ public class Robot : MonoBehaviour {
 		audioSource.Play();
 	}
 	
-	void showAnimation(Sprite[] sprites, float interval) {
+	public void damage() {
+		if (shield.activeSelf) { return; }
+		
+		health = Mathf.Max(health - 1, 0);
+		healthBar.sprite = (health == 3 ? healthBarSprites[0] : health == 2 ? healthBarSprites[1] : health == 1 ? healthBarSprites[0] : null);
+		
+		if (health == 0) {
+			becomeDead();
+		} else {
+			becomeDamaged();
+		}
+	}
+	
+	public void becomeDead() {
+		if (state == State.dead) { return; }
+		state = State.dead;
+		showAnimation(deadSprites, 0.1f, loop: false);
+	}
+	
+	public void becomeDamaged() {
+		if (state == State.damaged) { return; }
+		state = State.damaged;
+		showAnimation(damagedSprites, 0.3f, loop: false);
+	}
+	
+	void showAnimation(Sprite[] sprites, float interval, bool loop = true) {
 		currentSprites = sprites;
 		currentSpriteIndex = 0;
 		spriteAnimationDuration = interval;
 		spriteAnimationCountdown = 0;
 		spriteRenderer.sprite = sprites[0];
+		loopAnimation = loop;
+	}
+	
+	void destroyOtherRobot() {
+		var others = GameObject.FindObjectsOfType<Robot>();
+		for (var i = 0; i < others.Length; i++) {
+			var other = others[i];
+			if (other == this) { continue; }
+			other.damage();
+		}
 	}
 	
 	void OnValidate() {
 		if (spriteRenderer == null) { spriteRenderer = GetComponent<SpriteRenderer>(); }
 		if (audioSource == null) { audioSource = GetComponent<AudioSource>(); }
+	}
+	
+	public void activateShield() {
+		shield.SetActive(true);
+		shieldCountdown = 4;
 	}
 }

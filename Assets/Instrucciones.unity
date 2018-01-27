@@ -344,8 +344,8 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Jugar
 --- !u!222 &639516229
@@ -577,8 +577,8 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "Men\xFA"
 --- !u!222 &1014521316
@@ -771,7 +771,7 @@ MonoBehaviour:
     m_MinSize: 10
     m_MaxSize: 59
     m_Alignment: 1
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
@@ -813,10 +813,10 @@ RectTransform:
   m_Father: {fileID: 995135613}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.37375, y: 0.7483014}
-  m_AnchorMax: {x: 0.63000005, y: 0.7926603}
-  m_AnchoredPosition: {x: -1.5, y: 3}
-  m_SizeDelta: {x: 1.7200012, y: 6.9100037}
+  m_AnchorMin: {x: 0.36875, y: 0.754}
+  m_AnchorMax: {x: 0.62625, y: 0.809}
+  m_AnchoredPosition: {x: 1.9999962, y: -2}
+  m_SizeDelta: {x: 0.7200012, y: -3.0899963}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1738235964
 MonoBehaviour:
@@ -839,13 +839,13 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 34
-    m_FontStyle: 0
+    m_FontSize: 39
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 64
+    m_MaxSize: 70
     m_Alignment: 1
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1

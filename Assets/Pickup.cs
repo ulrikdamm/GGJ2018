@@ -15,7 +15,7 @@ public class Pickup : MonoBehaviour {
 	
 	public void setType(EnergyType type) {
 		this.type = type;
-		spriteRenderer.color = type.color;
+		// spriteRenderer.color = type.color;
 	}
 	
 	void OnValidate() {

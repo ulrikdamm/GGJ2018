@@ -62,12 +62,15 @@ public class Character : MonoBehaviour {
 				punchTimer = null;
 			}
 		}
+		
+		if (Input.GetKeyDown(actionKey)) { pickupItem(); }
+		if (Input.GetKeyUp(actionKey) && putDownTimer.HasValue) { cancelPutdown(); }
 	}
 	
 	void FixedUpdate() {
 		var speed = this.speed;
-		if (speedupTimer > 0.01) { speed *= 2; }
-		if (slowdownTimer > 0.01f) { speed /= 2; }
+		if (speedupTimer > 0.01) { speed *= 1.5f; }
+		if (slowdownTimer > 0.01f) { speed /= 1.5f; }
 		
 		var position = body.position;
 		
@@ -99,9 +102,6 @@ public class Character : MonoBehaviour {
 		}
 		
 		body.MovePosition(position);
-		
-		if (Input.GetKeyDown(actionKey)) { pickupItem(); }
-		if (Input.GetKeyUp(actionKey) && putDownTimer.HasValue) { cancelPutdown(); }
 	}
 	
 	void pickupItem() {
@@ -109,7 +109,7 @@ public class Character : MonoBehaviour {
 		
 		var pickup = overPickup();
 		
-		if (isInBatteryDrop() && carrying != null) {
+		if (inBatteryDrop() != null && carrying != null) {
 			beginPutdown();
 		} else if (carrying != null) {
 			dropBattery();
@@ -126,6 +126,12 @@ public class Character : MonoBehaviour {
 	
 	Pickup overPickup() {
 		for (var i = 0; i < overObjects.Count; i++) {
+			if (overObjects[i] == null) {
+				overObjects.RemoveAt(i);
+				i -= 1;
+				continue;
+			}
+			
 			var pickup = overObjects[i].GetComponent<Pickup>();
 			if (pickup != null) {
 				return pickup;
@@ -144,15 +150,19 @@ public class Character : MonoBehaviour {
 	}
 	
 	void beginPutdown() {
-		putDownTimer = 2;
+		putDownTimer = 1;
 		renderer.sprite = placingSprite;
 	}
 	
 	void putDownBattery() {
+		var dropArea = inBatteryDrop();
+		if (dropArea == null) { return; }
+		
 		gameUI.addPlayerPoint(carrying, playerIndex);
 		carrying = null;
 		putDownTimer = null;
 		renderer.sprite = normalSprite;
+		inBatteryDrop().addCharge();
 	}
 	
 	public void cancelPutdown() {
@@ -161,14 +171,13 @@ public class Character : MonoBehaviour {
 		renderer.sprite = carryingSprite;
 	}
 	
-	bool isInBatteryDrop() {
+	BatteryDropArea inBatteryDrop() {
 		for (var i = 0; i < overObjects.Count; i++) {
-			if (overObjects[i].GetComponent<BatteryDropArea>()) {
-				return true;
-			}
+			var dropArea = overObjects[i].GetComponent<BatteryDropArea>();
+			if (dropArea != null) { return dropArea; }
 		}
 		
-		return false;
+		return null;
 	}
 	
 	void setDirection(bool left) {

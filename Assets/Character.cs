@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Character : MonoBehaviour {
 	[SerializeField] int playerIndex;
@@ -36,6 +37,7 @@ public class Character : MonoBehaviour {
 	float? putDownTimer = null;
 	float? punchTimer = null;
 	public Vector2 direction;
+	Vector2 pushbackForce;
 	
 	void Start() {
 		initialScale = transform.localScale;
@@ -89,6 +91,11 @@ public class Character : MonoBehaviour {
 			position += new Vector2(1, 0) * speed;
 			setDirection(left: false);
 			direction = new Vector2(1, 0);
+		}
+		
+		if (pushbackForce.magnitude > 0.01f) {
+			position -= pushbackForce;
+			pushbackForce /= 2;
 		}
 		
 		body.MovePosition(position);
@@ -221,6 +228,6 @@ public class Character : MonoBehaviour {
 	}
 	
 	public void pushback(Vector2 direction) {
-		body.MovePosition(body.position - direction);
+		pushbackForce = direction * 2;
 	}
 }

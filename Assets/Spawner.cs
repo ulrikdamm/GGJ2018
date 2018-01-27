@@ -7,7 +7,8 @@ public class Spawner : MonoBehaviour {
 	[SerializeField] float maxY;
 	[SerializeField] GameObject[] spawned;
 	
-	[SerializeField][Range(0, 1)] float spawnChance;
+	[SerializeField] float baseSpawnChance = 4;
+	float spawnChance;
 	
 	public void spawn() {
 		var index = Random.Range(0, spawned.Length);
@@ -17,7 +18,9 @@ public class Spawner : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (Random.Range(0f, 60) < spawnChance) {
+		spawnChance += Time.deltaTime;
+		if (Random.Range(0, baseSpawnChance) < spawnChance) {
+			spawnChance = 0;
 			spawn();
 		}
 	}

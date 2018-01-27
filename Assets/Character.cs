@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 
 public class Character : MonoBehaviour {
+	enum State { stand, walk, standCarry, walkCarry, placing, punching };
+	State state;
+	
 	[SerializeField] int playerIndex;
 	
 	[SerializeField] AudioClip punchSound;
 	[SerializeField] AudioClip gettingPunchedSound;
 	
 	[SerializeField] Sprite normalSprite;
-	[SerializeField] Sprite carryingSprite;
+	[SerializeField] Sprite[] walkSprites;
+	[SerializeField] Sprite[] carryingSprites;
 	[SerializeField] Sprite placingSprite;
 	[SerializeField] Sprite punchingSprite;
 	
@@ -44,9 +48,45 @@ public class Character : MonoBehaviour {
 	public Vector2 direction;
 	Vector2 pushbackForce;
 	
+	Sprite[] currentSprites;
+	int currentSpriteIndex = 0;
+	float spriteAnimationDuration = 0.3f;
+	float spriteAnimationCountdown = 0;
+	bool loopAnimation = true;
+	
+	bool moving = false;
+	
 	void Start() {
 		initialScale = transform.localScale;
 		gameUI = GameObject.FindObjectOfType<GameUI>();
+		setState(State.stand, force: true);
+	}
+	
+	void setState(State state, bool force = false) {
+		if (!force && this.state == state) { return; }
+		this.state = state;
+		
+		switch (state) {
+			case State.stand: showSprite(walkSprites[0]); break;
+			case State.walk: showAnimation(walkSprites, 0.1f); break;
+			case State.standCarry: showSprite(carryingSprites[0]); break;
+			case State.walkCarry: showAnimation(carryingSprites, 0.1f); break;
+			case State.placing: showSprite(placingSprite); break;
+			case State.punching: showSprite(punchingSprite); break;
+		}
+	}
+	
+	void showSprite(Sprite sprite) {
+		showAnimation(new Sprite[] { sprite }, 10);
+	}
+	
+	void showAnimation(Sprite[] sprites, float interval, bool loop = true) {
+		currentSprites = sprites;
+		currentSpriteIndex = 0;
+		spriteAnimationDuration = interval;
+		spriteAnimationCountdown = 0;
+		renderer.sprite = sprites[0];
+		loopAnimation = loop;
 	}
 	
 	void Update() {
@@ -63,13 +103,62 @@ public class Character : MonoBehaviour {
 		if (punchTimer.HasValue) {
 			punchTimer = punchTimer.Value - Time.deltaTime;
 			if (punchTimer < 0) {
-				renderer.sprite = normalSprite;
+				setState(State.stand);
+				// showSprite(normalSprite);
+				// renderer.sprite = normalSprite;
 				punchTimer = null;
 			}
 		}
 		
 		if (Input.GetKeyDown(actionKey)) { pickupItem(); }
 		if (Input.GetKeyUp(actionKey) && putDownTimer.HasValue) { cancelPutdown(); }
+		
+		spriteAnimationCountdown -= Time.deltaTime;
+		if (spriteAnimationCountdown < 0) {
+			spriteAnimationCountdown = spriteAnimationDuration;
+			currentSpriteIndex = (currentSpriteIndex + 1) % currentSprites.Length;
+			if (loopAnimation) { currentSpriteIndex %= currentSprites.Length; }
+			else { currentSpriteIndex = Mathf.Min(currentSpriteIndex, currentSprites.Length - 1); }
+			renderer.sprite = currentSprites[currentSpriteIndex];
+		}
+		
+		if (state == State.placing) {
+			moving = false;
+		} else {
+			moving = false;
+			
+			var newDirection = Vector2.zero;
+			
+			if (Input.GetKey(upKey)) {
+				newDirection.y = 1;
+				moving = true;
+			} else if (Input.GetKey(downKey)) {
+				newDirection.y = -1;
+				moving = true;
+			}
+			
+			if (Input.GetKey(leftKey)) {
+				setDirection(left: true);
+				newDirection.x = -1;
+				moving = true;
+			} else if (Input.GetKey(rightKey)) {
+				setDirection(left: false);
+				newDirection.x = 1;
+				moving = true;
+			}
+			
+			if (moving) {
+				direction = newDirection;
+			}
+			
+			if (state != State.punching) {
+				if (moving) {
+					setState(carrying == null ? State.walk : State.walkCarry);
+				} else {
+					setState(carrying == null ? State.stand : State.standCarry);
+				}
+			}
+		}
 	}
 	
 	void FixedUpdate() {
@@ -79,27 +168,43 @@ public class Character : MonoBehaviour {
 		
 		var position = body.position;
 		
-		if (Input.GetKey(upKey)) {
-			position += new Vector2(0, 1) * speed;
-			direction = new Vector2(0, 1);
+		if (moving) {
+			position += direction * speed;
 		}
 		
-		if (Input.GetKey(downKey)) {
-			position += new Vector2(0, -1) * speed;
-			direction = new Vector2(0, -1);
-		}
-		
-		if (Input.GetKey(leftKey)) {
-			position += new Vector2(-1, 0) * speed;
-			setDirection(left: true);
-			direction = new Vector2(-1, 0);
-		}
-		
-		if (Input.GetKey(rightKey)) {
-			position += new Vector2(1, 0) * speed;
-			setDirection(left: false);
-			direction = new Vector2(1, 0);
-		}
+		// if (state != State.placing) {
+		// 	moving = false;
+			
+		// 	if (Input.GetKey(upKey)) {
+		// 		position += new Vector2(0, 1) * speed;
+		// 		direction = new Vector2(0, 1);
+		// 		moving = true;
+		// 	} else if (Input.GetKey(downKey)) {
+		// 		position += new Vector2(0, -1) * speed;
+		// 		direction = new Vector2(0, -1);
+		// 		moving = true;
+		// 	}
+			
+		// 	if (Input.GetKey(leftKey)) {
+		// 		position += new Vector2(-1, 0) * speed;
+		// 		setDirection(left: true);
+		// 		direction = new Vector2(-1, 0);
+		// 		moving = true;
+		// 	} else if (Input.GetKey(rightKey)) {
+		// 		position += new Vector2(1, 0) * speed;
+		// 		setDirection(left: false);
+		// 		direction = new Vector2(1, 0);
+		// 		moving = true;
+		// 	}
+			
+		// 	if (state != State.punching) {
+		// 		if (moving) {
+		// 			setState(carrying == null ? State.walk : State.walkCarry);
+		// 		} else {
+		// 			setState(carrying == null ? State.stand : State.standCarry);
+		// 		}
+		// 	}
+		// }
 		
 		if (pushbackForce.magnitude > 0.01f) {
 			position -= pushbackForce;
@@ -119,12 +224,16 @@ public class Character : MonoBehaviour {
 		} else if (carrying != null) {
 			dropBattery();
 		} else if (pickup != null) {
-			renderer.sprite = carryingSprite;
+			// showSprite(carryingSprite);
+			// renderer.sprite = carryingSprite;
 			carrying = pickup.type;
+			setState(State.standCarry);
 			Destroy(pickup.gameObject);
 		} else {
 			punchZone.punch();
-			renderer.sprite = punchingSprite;
+			// showSprite(punchingSprite);
+			// renderer.sprite = punchingSprite;
+			setState(State.punching);
 			punchTimer = 0.3f;
 			audioSource.clip = punchSound;
 			audioSource.Play();
@@ -153,12 +262,16 @@ public class Character : MonoBehaviour {
 		var spawn = GameObject.Instantiate(pickupPrefab, transform.position, Quaternion.identity);
 		spawn.setType(carrying);
 		carrying = null;
-		renderer.sprite = normalSprite;
+		setState(State.stand);
+		// showSprite(normalSprite);
+		// renderer.sprite = normalSprite;
 	}
 	
 	void beginPutdown() {
 		putDownTimer = 1;
-		renderer.sprite = placingSprite;
+		setState(State.placing);
+		// showSprite(placingSprite);
+		// renderer.sprite = placingSprite;
 	}
 	
 	void putDownBattery() {
@@ -168,14 +281,18 @@ public class Character : MonoBehaviour {
 		gameUI.addPlayerPoint(carrying, playerIndex);
 		carrying = null;
 		putDownTimer = null;
-		renderer.sprite = normalSprite;
+		setState(State.stand);
+		// showSprite(normalSprite);
+		// renderer.sprite = normalSprite;
 		inBatteryDrop().addCharge();
 	}
 	
 	public void cancelPutdown() {
 		if (carrying == null) { return; }
 		putDownTimer = null;
-		renderer.sprite = carryingSprite;
+		setState(State.standCarry);
+		// showSprite(carryingSprite);
+		// renderer.sprite = carryingSprite;
 	}
 	
 	BatteryDropArea inBatteryDrop() {

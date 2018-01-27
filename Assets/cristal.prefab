@@ -78,6 +78,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5897665a1d564921a4b1b4511ea4999, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  popCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.42196238
+      value: 1.0871564
+      inSlope: 3.972372
+      outSlope: 3.972372
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   types:
   - {fileID: 11400000, guid: 307cfbd7df86440469681dcdeacae154, type: 2}
   - {fileID: 11400000, guid: 504320f63dc854bbbb36759536d1166a, type: 2}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Robot : MonoBehaviour {
-	enum State { sleep, active, attack, veryAttack, damaged, dead };
+	enum State { sleep, active, charging, attack, veryAttack, damaged, dead };
 	State state;
 	
 	[SerializeField] GameObject shield;
@@ -13,15 +13,19 @@ public class Robot : MonoBehaviour {
 	[SerializeField] Sprite[] deadSprites;
 	[SerializeField] Sprite[] deadOnFireSprites;
 	[SerializeField] Sprite[] damagedSprites;
+	[SerializeField] Sprite[] chargeSprites;
+	[SerializeField] Sprite[] chargeDoubleSprites;
 	
-	[SerializeField] Sprite[] healthBarSprites;
-	[SerializeField] SpriteRenderer healthBar;
+	[SerializeField] GameObject heart1;
+	[SerializeField] GameObject heart2;
+	[SerializeField] GameObject heart3;
 	
 	[SerializeField] AudioClip chargeSound;
 	[SerializeField] AudioClip attackSound;
 	
 	[SerializeField] AudioSource audioSource;
 	[SerializeField] SpriteRenderer spriteRenderer;
+	[SerializeField] LaserFlash flash;
 	
 	Sprite[] currentSprites;
 	int currentSpriteIndex = 0;
@@ -45,9 +49,9 @@ public class Robot : MonoBehaviour {
 				becomeSleepy();
 				fireCountdown = null;
 				destroyOtherRobot();
-			} else if (fireCountdown.Value < 2) {
+			} else if (fireCountdown.Value < 0.5f) {
 				becomeVeryAttacky();
-			} else if (fireCountdown.Value < 3) {
+			} else if (fireCountdown.Value < 1.5f) {
 				becomeAttacky();
 			}
 		}
@@ -65,6 +69,10 @@ public class Robot : MonoBehaviour {
 			}
 			
 			if (state == State.damaged && currentSpriteIndex == damagedSprites.Length - 1) {
+				becomeSleepy();
+			}
+			
+			if (state == State.charging && currentSpriteIndex == chargeSprites.Length - 1) {
 				becomeSleepy();
 			}
 		}
@@ -94,6 +102,17 @@ public class Robot : MonoBehaviour {
 		audioSource.Play();
 	}
 	
+	public void becomeCharged(bool doubleCharge) {
+		if (state == State.charging) { return; }
+		state = State.charging;
+		
+		if (doubleCharge) {
+			showAnimation(chargeDoubleSprites, 0.3f);
+		} else {
+			showAnimation(chargeSprites, 0.3f);
+		}
+	}
+	
 	public void becomeAttacky() {
 		if (state == State.attack) { return; }
 		state = State.attack;
@@ -103,7 +122,7 @@ public class Robot : MonoBehaviour {
 	public void becomeVeryAttacky() {
 		if (state == State.veryAttack) { return; }
 		state = State.veryAttack;
-		showAnimation(veryAttackingSprites, 0.2f);
+		showAnimation(veryAttackingSprites, 0.1f);
 		audioSource.clip = attackSound;
 		audioSource.Play();
 	}
@@ -112,7 +131,9 @@ public class Robot : MonoBehaviour {
 		if (shield.activeSelf) { return; }
 		
 		health = Mathf.Max(health - 1, 0);
-		healthBar.sprite = (health == 3 ? healthBarSprites[0] : health == 2 ? healthBarSprites[1] : health == 1 ? healthBarSprites[0] : null);
+		heart1.SetActive(health >= 1);
+		heart2.SetActive(health >= 2);
+		heart3.SetActive(health >= 3);
 		
 		if (health == 0) {
 			becomeDead();
@@ -143,6 +164,8 @@ public class Robot : MonoBehaviour {
 	}
 	
 	void destroyOtherRobot() {
+		flash.flash();
+		
 		var others = GameObject.FindObjectsOfType<Robot>();
 		for (var i = 0; i < others.Length; i++) {
 			var other = others[i];

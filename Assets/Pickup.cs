@@ -7,8 +7,14 @@ public class Pickup : MonoBehaviour {
 	[SerializeField] SpriteRenderer spriteRenderer;
 	
 	void Start() {
-		var typeIndex = Random.Range(0, types.Length);
-		type = types[typeIndex];
+		if (type == null) {
+			var typeIndex = Random.Range(0, types.Length);
+			setType(types[typeIndex]);
+		}
+	}
+	
+	public void setType(EnergyType type) {
+		this.type = type;
 		spriteRenderer.color = type.color;
 	}
 	

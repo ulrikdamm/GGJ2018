@@ -53,6 +53,7 @@
   <ItemGroup>
      <Compile Include="Assets\BatteryDropArea.cs" />
      <Compile Include="Assets\Character.cs" />
+     <Compile Include="Assets\EstadoJuego.cs" />
      <Compile Include="Assets\GameUI.cs" />
      <Compile Include="Assets\Hovering.cs" />
      <Compile Include="Assets\LaserFlash.cs" />

@@ -4,6 +4,7 @@ public class Robot : MonoBehaviour {
 	enum State { sleep, active, charging, attack, veryAttack, damaged, dead };
 	State state;
 	
+	[SerializeField] bool isLeftPlayer;
 	[SerializeField] GameObject shield;
 	
 	[SerializeField] Sprite[] sleepingSprites;
@@ -146,6 +147,8 @@ public class Robot : MonoBehaviour {
 		if (state == State.dead) { return; }
 		state = State.dead;
 		showAnimation(deadSprites, 0.1f, loop: false);
+		
+		GameObject.FindObjectOfType<GameController>().onWin(!isLeftPlayer);
 	}
 	
 	public void becomeDamaged() {

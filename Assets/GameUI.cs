@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameUI : MonoBehaviour {
 	[SerializeField] PointsIndicator pointsPlayer1;
@@ -29,5 +30,13 @@ public class GameUI : MonoBehaviour {
 	void updateUI() {
 		pointsPlayer1.setColors(player1Points.ToArray());
 		pointsPlayer2.setColors(player2Points.ToArray());
+	}
+	
+	public void goToMenu() {
+		SceneManager.LoadScene("Menu");
+	}
+	
+	public void replay() {
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
